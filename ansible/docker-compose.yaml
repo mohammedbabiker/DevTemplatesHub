@@ -1,0 +1,50 @@
+services:
+  semaphore:
+    container_name: semaphore-ansible-UI
+    restart: unless-stopped
+    # user: vla 
+    ports:
+      - 3000:3000
+    image: semaphoreui/semaphore
+    environment:
+      SEMAPHORE_DB_DIALECT: mysql
+      SEMAPHORE_DB_HOST: mysql
+      SEMAPHORE_DB: semaphore
+      SEMAPHORE_DB_USER: admin
+      SEMAPHORE_DB_PASS: admin
+      SEMAPHORE_DB_PORT: 3306
+      SEMAPHORE_ADMIN_PASSWORD: admin
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: key 
+    volumes:
+      - ./data:/var/lib/semaphore
+      - ./config:/etc/semaphore
+      - ./inventory/:/inventory:ro
+    depends_on:
+      - mysql
+    networks:
+      - semaphore_net
+
+  mysql:
+    container_name: semaphore-mysql
+    restart: unless-stopped
+    image: mysql
+    hostname: mysql
+    volumes:
+      - semaphore-mysql:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: semaphore
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    networks:
+        - semaphore_net
+
+volumes:
+  semaphore-mysql:
+    driver: local
+networks:
+  semaphore_net:
+    name: semaphore_net
