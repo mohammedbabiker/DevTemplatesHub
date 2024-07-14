@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mariadb
+    container_name: wordpress_backend
+    restart: always
+    environment:
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: admin
+      MARIADB_DATABASE: database
+      MARIADB_ROOT_PASSWORD: password
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - wordpress_net
+
+  web:
+    image: wordpress
+    container_name: wordpress-frontend
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: db_user
+      WORDPRESS_DB_PASSWORD: db_password
+      WORDPRESS_DB_NAME: frontend_app 
+    volumes:
+      - wordpress:/var/www/html
+    ports:
+      - 8080:80 
+    networks:
+      - wordpress_net
+    depends_on:
+      - db
+
+networks:
+  wp:
+    driver: bridge
+    name: wordpress_net
+
+volumes:
+  maria:
+    name: mariadb
+  wordpress:
+    name: wordpress
