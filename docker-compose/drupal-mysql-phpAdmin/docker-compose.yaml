@@ -1,0 +1,61 @@
+services:
+  # Database
+  db:
+    container_name: durpal10_database
+    image: mysql
+    working_dir: ""
+    volumes:
+      - type: "volume"
+        source: "db_data"
+        target: "/var/lib/mysql"
+    restart: always
+    environment:
+      MYSQL_DATABASE: drupal_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: changeme
+    networks:
+      - net
+
+  # phpmyadmin
+  phpmyadmin:
+    container_name: phpadmin
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: changeme
+    networks:
+      - net
+
+  # Drupal
+  drupal:
+    depends_on:
+      - db
+    container_name: drupal_frontend
+    image: drupal
+    ports:
+      - "8000:80"
+    restart: always
+    volumes:
+      - drupal_data:/var/www/html
+    # env pass should match db data
+    environment:
+      DRUPAL_DB_HOST: db:3306
+      DRUPAL_DB_USER: admin
+      DRUPAL_DB_PASSWORD: admin
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
+    name: net
+
+volumes:
+  db_data:
+  drupal_data:
