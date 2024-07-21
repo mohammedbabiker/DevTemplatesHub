@@ -1,50 +1,51 @@
 services:
   semaphore:
-    container_name: semaphore-ansible-UI
+    image: semaphoreui/semaphore:v2.10.21
+    container_name: semaphore_ansible_ui
     restart: unless-stopped
-    # user: vla 
-    ports:
-      - 3000:3000
-    image: semaphoreui/semaphore
     environment:
       SEMAPHORE_DB_DIALECT: mysql
       SEMAPHORE_DB_HOST: mysql
-      SEMAPHORE_DB: semaphore
       SEMAPHORE_DB_USER: admin
-      SEMAPHORE_DB_PASS: admin
+      SEMAPHORE_DB_PASS: example # to change
       SEMAPHORE_DB_PORT: 3306
-      SEMAPHORE_ADMIN_PASSWORD: admin
-      SEMAPHORE_ADMIN_NAME: admin
-      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+      SEMAPHORE_DB: semaphore
+      SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
       SEMAPHORE_ADMIN: admin
-      SEMAPHORE_ACCESS_KEY_ENCRYPTION: key 
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_PASSWORD: example # to change
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: # gen key = < head -c32 /dev/urandom | base64 >
     volumes:
       - ./data:/var/lib/semaphore
       - ./config:/etc/semaphore
       - ./inventory/:/inventory:ro
+    ports:
+      - 3000:3000
     depends_on:
       - mysql
     networks:
       - semaphore_net
 
   mysql:
-    container_name: semaphore-mysql
+    container_name: semaphore_mysql
     restart: unless-stopped
     image: mysql
     hostname: mysql
     volumes:
-      - semaphore-mysql:/var/lib/mysql
+      - semaphore_data:/var/lib/mysql
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: semaphore
       MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
+      MYSQL_PASSWORD: example # to change
     networks:
-        - semaphore_net
+      - semaphore_net
 
 volumes:
-  semaphore-mysql:
+  semaphore_data:
     driver: local
 networks:
   semaphore_net:
     name: semaphore_net
+    driver: bridge
