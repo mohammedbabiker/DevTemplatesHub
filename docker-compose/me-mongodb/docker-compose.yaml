@@ -1,0 +1,39 @@
+services:
+  mongo:
+    container_name: mogno_db
+    image: mongo:3.6-xenial
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mongo_net
+
+  mongo-express:
+    image: mongo-express:1.0.2-18
+    container_name: mongo_express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo # name of the service not container name
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_BASICAUTH_USERNAME: username
+      ME_CONFIG_BASICAUTH_PASSWORD: example
+      ME_CONFIG_MONGODB_PORT: 27017
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    networks:
+      - mongo_net
+
+networks:
+  mongo_net:
+    name: mongo_net
+
+volumes:
+  mongo_data:
+    driver: local
+    name: mongo_data
