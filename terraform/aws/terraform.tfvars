@@ -1,0 +1,5 @@
+key-name            = "value"
+security-group-name = "value"
+security-group-id   = "your exist group id"
+ami                 = "ami-0b8fd93c15b2c81ce"
+type                = "t3.micro"
