@@ -1,0 +1,12 @@
+---
+- name: Install zsh on server
+  hosts: all
+  become: true
+
+  tasks:
+    - name: install zsh
+      ansible.builtin.apt:
+        name: zsh
+        state: present
+        update_cache: true
+      become: true
