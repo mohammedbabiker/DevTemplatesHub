@@ -1,0 +1,17 @@
+# example file for ansible configuration hosts
+master:
+  hosts:
+    123.45.67.89:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_user: user
+    ansible_ssh_private_key_file: /new/path/to/.ssh/key
+
+workers:
+  hosts:
+    98.76.54.32:
+    87.65.43.21:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_user: user
+    ansible_ssh_private_key_file: /new/path/to/.ssh/key
