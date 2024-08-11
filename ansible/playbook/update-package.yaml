@@ -1,0 +1,28 @@
+---
+- name: Update and upgrade apt packages
+  become: true
+  hosts: "*"
+
+  tasks:
+    - name: apt update
+      when: ansible_pkg_mgr == 'apt'
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: yum update
+      when: ansible_pkg_mgr == 'yum'
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+
+    - name: apt upgrade
+      when: ansible_pkg_mgr == 'apt'
+      ansible.builtin.apt:
+        upgrade: dist
+
+    - name: yum upgrade
+      when: ansible_pkg_mgr == 'yum'
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+        exclude: kernel*
