@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Remove default nginx page
+      file:
+        path: /var/www/html/index.nginx-debian.html
+        state: absent
+
+    - name: Add custom page
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <h1 style="text-align: center; margin-top: 5rem;">Nginx server is up and running.</h1>
+          </body>
+          </html>
+
+    - name: Restart nginx service to apply
+      service:
+        name: nginx
+        state: restarted
