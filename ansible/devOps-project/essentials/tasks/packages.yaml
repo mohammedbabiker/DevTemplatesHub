@@ -1,0 +1,14 @@
+- name: Install packages
+  ansible.builtin.apt:
+    pkg:
+      - fd-find
+      - bat
+      - git
+      - curl
+      - gnupg
+      - python3-pip
+      - python3-setuptools
+      - ca-certificates
+      - iptables
+      - iptables-persistent
+      - apt-transport-https
