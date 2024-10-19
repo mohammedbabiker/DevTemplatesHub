@@ -17,3 +17,4 @@
 #   notify: restart systemd-networkd
 
 - include_tasks: packages.yaml
+- include_tasks: br0.yaml

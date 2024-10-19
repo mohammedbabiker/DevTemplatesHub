@@ -1,0 +1,7 @@
+[Match]
+Name=br0
+
+[Network]
+DHCP=yes
+Address=10.100.100.1/24
+IPMasquerade=ipv4
