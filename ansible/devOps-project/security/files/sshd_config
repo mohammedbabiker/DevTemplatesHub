@@ -1,0 +1,10 @@
+Port 43322 # you should leave the port as it is
+PermitRootLogin prohibit-password
+AuthorizedKeysFile .ssh/authorized_keys
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+X11UseLocalhost no
+PrintMotd no
+ClientAliveInterval 60
+Subsystem sftp /usr/lib/ssh/sftp-server
