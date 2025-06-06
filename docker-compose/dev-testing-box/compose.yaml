@@ -1,0 +1,25 @@
+services:
+  devbox:
+    build: .
+    container_name: devbox
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    networks:
+      - devbox
+    volumes:
+      - devbox:/home/dev/.data
+      - ./ssh:/home/dev/.ssh
+      - ./gpg:/home/dev/.gnupg
+      - ./pass:/home/dev/.password-store
+
+volumes:
+  devbox:
+    driver: local
+
+networks:
+  devbox:
+    name: devbox
+    driver: bridge
