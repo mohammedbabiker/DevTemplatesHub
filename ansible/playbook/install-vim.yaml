@@ -1,0 +1,9 @@
+---
+  - name: check if vim present
+    become: true
+    hosts: all
+    tasks:
+      - name: ensure vim is there
+        apt:
+          name: vim
+          state: latest
