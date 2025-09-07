@@ -1,0 +1,21 @@
+---
+- name: Set and confiure timezone
+  hosts: all
+  become: ture
+  tasks:
+    
+  - name: Set timezone
+    shell: timedatectl set-timezone Country/City
+
+  - name: Check or stop timesyncd
+    systemd:
+      name: systemd-timesyncd.service
+      state: stopped
+
+  - name: Copy new timesyncd config
+    template: src=../templates/timesyncd.conf dest=/etc/systemd/timesyncd.conf
+
+  - name: Start timesyncd
+    systemd:
+      name: systemd-timesyncd.service
+      state: started
