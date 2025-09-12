@@ -1,0 +1,86 @@
+---
+services:
+  drupal:
+    build: .
+    container_name: drupal-core
+    restart: unless-stopped
+    environment:
+      DRUPAL_DB_PASSWORD: $DRUPAL_DB_PASSWORD
+      DRUPAL_DB_HOST: $DRUPAL_DB_HOST
+      DRUPAL_DB_USER: $DRUPAL_DB_USER
+    volumes:
+      - drupal-data:/var/www/html
+    depends_on:
+      - redis
+      - database
+    networks:
+      - drupal-network
+
+  database:
+    container_name: drupal-mysql
+    restart: unless-stopped
+    image: mysql
+    volumes:
+      - type: "volume"
+        source: "drupal-database"
+        target: "/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+    networks:
+      - drupal-network
+
+  phpmyadmin:
+    container_name: drupal-phpmyadmin
+    restart: unless-stopped
+    image: phpmyadmin
+    environment:
+      PMA_HOST: $PMA_HOST
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    depends_on:
+      - database
+    networks:
+      - drupal-network
+
+  nginx:
+    image: nginx
+    container_name: drupal-nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/certs:/etc/nginx/ssl
+      - ./nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    depends_on:
+      - drupal
+      - database
+      - phpmyadmin
+    networks:
+      - drupal-network
+      
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - drupal-network
+    volumes:
+      - drupal-cache:/data
+
+networks:
+  drupal-network:
+    name: drupal-network
+    driver: bridge
+
+volumes:
+  drupal-data:
+    name: drupal-data
+    driver: local
+  drupal-cache:
+    name: drupal-cache
+    driver: local
+  drupal-database:
+    name: drupal-database
+    driver: local
