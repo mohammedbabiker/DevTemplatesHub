@@ -49,7 +49,7 @@ services:
       - ./gitea/data:/data
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - network
+      - custom
     depends_on:
       redis:
         condition: service_healthy
@@ -78,7 +78,7 @@ services:
     volumes:
       - /opt/gitea/mysql-data:/var/lib/mysql
     networks:
-      - network
+      - custom
   redis:
     image: redis:alpine
     restart: unless-stopped
@@ -96,30 +96,34 @@ services:
       options:
         max-size: 1m
     networks:
-      - network
+      - custom
     volumes:
       - ./redis:/data
-      #gitea-runner:
-      #  image: gitea/act_runner:0.2.13
-      #  container_name: gitea-runner
-      #environment:
-      #  - CONFIG_FILE=/config.yaml
-      #  - GITEA_INSTANCE_URL=${GITEA_INSTANCE_URL}
-      #  - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN}
-      #  - GITEA_RUNNER_NAME=${GITEA_RUNNER_NAME}
-      #  - GITEA_RUNNER_LABELS=${GITEA_RUNNER_LABELS}
-      #  volumes:
-      #   - ./config.yaml:/config.yaml
-      #   - ./gitea/gitea-runner/cache:/cache
-      #   - ./gitea/gitea-runner/data:/data
-      #   - /var/run/docker.sock:/var/run/docker.sock
-      #  networks:
-      #    - gitea
-      # depends_on:
-      #   gitea:
-      #condition: service_started
-      #restart: unless-stopped
+    gitea-runner:
+      image: gitea/runner:3
+      container_name: gitea-runner
+      restart: unless-stopped
+    environment:
+      - CONFIG_FILE=/config.yaml
+      - GITEA_ROOT_URL=${GITEA_ROOT_URL}
+      - GITEA_INSTANCE_URL=${GITEA_INSTANCE_URL}
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN}
+      - GITEA_RUNNER_NAME=${GITEA_RUNNER_NAME}
+      - GITEA_RUNNER_LABELS=${GITEA_RUNNER_LABELS}
+    volumes:
+      - ./config.yaml:/config.yaml
+      - ./gitea/gitea-runner/cache:/cache
+      - ./gitea/gitea-runner/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - custom
+    depends_on:
+      db:
+        condition: service_started
+      gitea:
+        condition: service_started
+        restart: true
 
 networks:
-  network:
+  custom:
     external: true
